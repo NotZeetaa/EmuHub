@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmuHub — Android Emulation Central</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c23;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #f0f2f7;
+    --muted: #8892a4;
+    --accent: #4f8ef7;
+    --accent2: #7c5af7;
+    --green: #22d47a;
+    --amber: #f7a832;
+    --red: #f75858;
+    --pill-bg: rgba(79,142,247,0.13);
+    --pill-text: #6faeff;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --glow: 0 0 40px rgba(79,142,247,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .wrap { position: relative; z-index: 1; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,16,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--text);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+  .nav-links {
+    display: flex; gap: 4px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+  .hero {
+    padding: 80px 20px 60px;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--pill-bg);
+    border: 1px solid rgba(79,142,247,0.2);
+    color: var(--pill-text);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(36px, 8vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #f0f2f7 30%, #8892a4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 480px;
+    margin: 0 auto 36px;
+    font-weight: 300;
+  }
+  .hero-actions {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(79,142,247,0.35);
+  }
+  .btn-primary:hover { background: #6faeff; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(79,142,247,0.45); }
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border2);
+  }
+  .btn-ghost:hover { background: var(--surface2); transform: translateY(-1px); }
+  .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 52px;
+  }
+  .stat {
+    background: var(--surface);
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--text);
+  }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  section { padding: 52px 16px; max-width: 900px; margin: 0 auto; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 28px;
+  }
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+  }
+  .section-sub { color: var(--muted); font-size: 13px; }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(79,142,247,0.3), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--glow); }
+  .card:hover::before { opacity: 1; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .card-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .card-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+  .badge {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+  .badge-blue { background: rgba(79,142,247,0.15); color: #6faeff; border: 1px solid rgba(79,142,247,0.2); }
+  .badge-green { background: rgba(34,212,122,0.12); color: #22d47a; border: 1px solid rgba(34,212,122,0.2); }
+  .badge-amber { background: rgba(247,168,50,0.12); color: #f7a832; border: 1px solid rgba(247,168,50,0.2); }
+  .badge-purple { background: rgba(124,90,247,0.15); color: #a07cf7; border: 1px solid rgba(124,90,247,0.2); }
+  .badge-red { background: rgba(247,88,88,0.12); color: #f78888; border: 1px solid rgba(247,88,88,0.2); }
+  .card-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  .card-desc { color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 16px; }
+  .card-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .dl-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .dl-btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .dl-btn-primary:hover { background: #6faeff; }
+  .dl-btn-ghost {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    flex: 0;
+    padding: 9px 12px;
+  }
+  .dl-btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+  .version-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.08);
+    padding: 4px 8px;
+    border-radius: 20px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    font-family: monospace;
+  }
+  .card-featured {
+    grid-column: 1 / -1;
+    display: flex; gap: 24px;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(79,142,247,0.08), rgba(124,90,247,0.06));
+    border-color: rgba(79,142,247,0.2);
+  }
+  @media (max-width: 600px) {
+    .card-featured { flex-direction: column; }
+    .card-featured .card-icon { width: 52px; height: 52px; font-size: 28px; }
+    /* Mobile button fix: stack buttons vertically and make them full width */
+    .card-footer {
+      flex-direction: column;
+      width: 100%;
+    }
+    .card-footer .dl-btn,
+    .card-footer .dl-btn-ghost {
+      width: 100%;
+      flex: auto;
+      justify-content: center;
+    }
+    .card-footer .dl-btn-ghost {
+      flex: auto;
+    }
+    .version-tag {
+      text-align: center;
+      width: 100%;
+      margin-top: 4px;
+    }
+  }
+  .card-featured-body { flex: 1; }
+  .card-featured-body .card-name { font-size: 20px; }
+  .callout {
+    background: rgba(79,142,247,0.07);
+    border: 1px solid rgba(79,142,247,0.18);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex; gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .callout span { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+  .callout strong { color: var(--text); }
+  .divider {
+    height: 1px;
+    background: var(--border);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero { padding: 48px 20px 40px; }
+  }
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .gpu-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .gpu-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .gpu-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .gpu-table tr:last-child td { border-bottom: none; }
+  .gpu-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .gpu-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .tag-soc {
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 2px 7px;
+    color: var(--muted);
+  }
+  .status { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot-green { background: var(--green); box-shadow: 0 0 5px var(--green); }
+  .dot-amber { background: var(--amber); box-shadow: 0 0 5px var(--amber); }
+  .dot-blue { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+  .steps { display: flex; flex-direction: column; gap: 16px; }
+  .step { display: flex; gap: 14px; align-items: flex-start; }
+  .step-num {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-title { font-weight: 500; font-size: 14px; margin-bottom: 2px; }
+  .step-desc { color: var(--muted); font-size: 13px; }
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 11px;
+    color: var(--pill-text);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <a href="#" class="nav-logo"><div class="logo-dot"></div>EmuHub</a>
+  <ul class="nav-links">
+    <li><a href="#gpu">GPU Drivers</a></li>
+    <li><a href="#winlator">Winlator</a></li>
+    <li><a href="#gamehub">Tools</a></li>
+    <li><a href="#quickstart">Guide</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow"><span>●</span> Updated April 2025</div>
+  <h1>Android Emulation <span>Hub</span></h1>
+  <p>One place for GPU drivers, Winlator mods, game patches, and every tool you need to run PC games on Android.</p>
+  <div class="hero-actions">
+    <a href="#gpu" class="btn btn-primary">⬇ Get GPU Drivers</a>
+    <a href="#winlator" class="btn btn-ghost">Winlator Builds</a>
+    <a href="#gamehub" class="btn btn-ghost">GameHub Builds</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Driver Releases</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">Winlator Mods</div></div>
+  <div class="stat"><div class="stat-num">A8xx</div><div class="stat-label">Latest SoC Support</div></div>
+</div>
+
+<section id="gpu" class="reveal">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(79,142,247,0.12);">🎮</div>
+    <div><div class="section-title">Turnip GPU Drivers</div><div class="section-sub">Open-source Adreno Vulkan drivers — the heart of Android PC gaming</div></div>
+  </div>
+  <div class="callout">
+    <span>💡</span>
+    <div><strong>What is Turnip?</strong> Turnip is an open-source Mesa Vulkan driver for Qualcomm Adreno GPUs. It enables much better Vulkan performance than stock drivers.<br>
+    <strong>🔥 A8xx users:</strong> The featured driver below automatically fetches the latest <strong>Gen8</strong> ZIP from <strong>StevenMXZ/Adreno-Tools-Drivers</strong> — always get the newest experimental Turnip build for Snapdragon 8 Elite / 8s Elite.</div>
+  </div>
+  <div id="drivers-grid" class="card-grid"></div>
+</section>
+
+<div class="divider"></div>
+
+<section id="winlator" class="reveal">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(124,90,247,0.12);">🪟</div>
+    <div><div class="section-title">Winlator Builds & Mods</div><div class="section-sub">Run Windows x86/x64 games on your Android device</div></div>
+  </div>
+  <div class="callout"><span>ℹ️</span><div><strong>Winlator</strong> is a free Android app that lets you run Windows software using Box64 + Wine. Different community mods offer better compatibility, performance tweaks, and extra features.</div></div>
+  <div id="winlator-grid" class="card-grid"></div>
+</section>
+
+<div class="divider"></div>
+
+<section id="gamehub" class="reveal">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(34,212,122,0.1);">🛠</div>
+    <div><div class="section-title">GameHub Builds & More</div><div class="section-sub">GameHub Builds and More</div></div>
+  </div>
+  <div id="tools-grid" class="card-grid"></div>
+</section>
+
+<div class="divider"></div>
+
+<section id="quickstart" class="reveal">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(247,168,50,0.1);">⚡</div>
+    <div><div class="section-title">Quick-Start Guide</div><div class="section-sub">Get Windows games running in 5 steps</div></div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Check your Snapdragon GPU</div><div class="step-desc">Go to <em>Settings → About phone</em> and note your SoC model (e.g. Snapdragon 8 Elite). Match it to the compatibility table above — A8xx users get the latest Turnip ZIP automatically.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Download Winlator + latest Turnip driver</div><div class="step-desc">Grab the Winlator APK of your choice below, and for A8xx devices use the featured driver button that directly fetches the newest <code>.zip</code> from GitHub.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Install Winlator and import driver</div><div class="step-desc">Install the APK, open Winlator, go to <em>Settings → GPU Driver</em>, tap <em>Import</em>, and select the downloaded Turnip <code>.zip</code>. Then set it as the active driver.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Configure DXVK and container</div><div class="step-desc">Create a new container. Under Graphics, select <em>Turnip</em> as renderer and enable DXVK. For DX12 games, also enable VKD3D-Proton in the container settings.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Add your game and launch</div><div class="step-desc">Tap <em>Add Shortcut</em>, browse to your game's <code>.exe</code>, assign it to the container, and hit Start. Use GameHub for a clean front-end experience with cover art.</div></div></div>
+  </div>
+</section>
+
+<footer>
+  <div style="margin-bottom:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;">EmuHub</div>
+  <div style="margin-bottom:12px;">Links point to official GitHub repositories. Always verify downloads. Not affiliated with any project.</div>
+  <div>All drivers and software © their respective authors. This site is a community index only.</div>
+</footer>
+
+</div>
+
+<script>
+// ======================== CENTRALIZED CONFIGURATION ========================
+const EMU_CONFIG = {
+  drivers: [
+    { 
+      featured: true, 
+      icon: "🔥", 
+      name: "Turnip for Snapdragon 8 Elite / 8s Elite (A8xx)", 
+      description: "Latest experimental Turnip Vulkan driver for Adreno 830/840. Direct .zip download — always up-to-date with the newest Gen8 release from StevenMXZ/Adreno-Tools-Drivers. Enables Vulkan 1.3, ray-tracing, and major performance gains in Winlator.", 
+      badges: [{ text: "A8xx Series", class: "badge-blue" }, { text: "Gen8 ZIP", class: "badge-green" }, { text: "Auto-updated", class: "badge-purple" }], 
+      downloadUrl: "#",
+      githubUrl: "https://github.com/StevenMXZ/Adreno-Tools-Drivers",
+      dynamicRepo: "StevenMXZ/Adreno-Tools-Drivers"
+    },],
+  winlator: [
+    { icon: "🪟", name: "Winlator Official", description: "The original Winlator by brunodev85. Solid base for running Windows games with Box64 and Wine 9.x on ARM Android.", badges: [{ text: "Official", class: "badge-purple" }, { text: "Stable", class: "badge-green" }], downloadUrl: "https://github.com/brunodev85/winlator/releases", githubUrl: "https://github.com/brunodev85/winlator" },
+    { icon: "⚙️", name: "Winlator Cmod", description: "Community mod with extra performance profiles, updated Box64 dynarec, and improved Turnip integration.", badges: [{ text: "Mod", class: "badge-amber" }, { text: "Cmod", class: "badge-blue" }], downloadUrl: "https://github.com/Stredohori/Winlator-CMOD/releases", githubUrl: "https://github.com/Stredohori/Winlator-CMOD" },
+    { icon: "⚙️", name: "Winlator Ludashi", description: "Winlator fork with Arm64EC containers using FEXCore and optional WowBox64, enhancing 32-bit compatibility.", badges: [{ text: "Mod", class: "badge-amber" }, { text: "Ludashi", class: "badge-blue" }], downloadUrl: "https://github.com/StevenMXZ/Winlator-Ludashi/releases", githubUrl: "https://github.com/StevenMXZ/Winlator-Ludashi" },
+  ],
+  tools: [
+    { icon: "🎯", name: "GameHub", description: "Unified game launcher for Winlator. Displays installed games with cover art, per-game Turnip drivers and DXVK presets.", badges: [{ text: "Launcher", class: "badge-green" }], downloadUrl: "https://gamehub.xiaoji.com/" },
+    { icon: "🎯", name: "GameNative", description: "Play games you own on Steam, Epic and GOG directly on Android devices, with cloud saves.", badges: [{ text: "Launcher", class: "badge-green" }], downloadUrl: "https://github.com/utkarshdalal/GameNative/releases", githubUrl: "https://github.com/utkarshdalal/GameNative" },
+    { icon: "🖼", name: "BannerHub (Revanced)", description: "GameHub 5.3.5 ReVanced — GOG, Amazon, Epic library tabs, Component Manager, in-app downloader, Winlator HUD.", badges: [{ text: "Launcher", class: "badge-green" }], downloadUrl: "https://github.com/The412Banner/bannerhub/releases", githubUrl: "https://github.com/The412Banner/bannerhub" },
+    { icon: "📦", name: "VKD3D-Proton", description: "Translates DirectX 12 to Vulkan. Essential for DX12 games in Winlator.", badges: [{ text: "VKD3D", class: "badge-blue" }], downloadUrl: "https://github.com/Arihany/WinlatorWCPHub/releases/tag/VKD3D-PROTON", githubUrl: "https://github.com/Arihany/WinlatorWCPHub/releases/tag/VKD3D-PROTON" },
+    { icon: "🧪", name: "DXVK", description: "Translates DirectX 9/10/11 to Vulkan. Critical for most PC games in Winlator.", badges: [{ text: "Translation", class: "badge-purple" }], downloadUrl: "https://github.com/Arihany/WinlatorWCPHub/releases/tag/DXVK", githubUrl: "https://github.com/Arihany/WinlatorWCPHub/releases/tag/DXVK" },
+    { icon: "📱", name: "Box64", description: "ARM64 x86_64 emulator/translator. The core engine that makes Winlator work.", badges: [{ text: "Emulator", class: "badge-green" }], downloadUrl: "https://github.com/ptitSeb/box64/releases", githubUrl: "https://github.com/ptitSeb/box64" },
+    { icon: "📱", name: "FexCore", description: "Prioritizes accuracy. On modern setups it can give you very good compatibility without too much fuss.", badges: [{ text: "Emulator", class: "badge-green" }], downloadUrl: "https://github.com/Arihany/WinlatorWCPHub/releases/tag/FEXCore", githubUrl: "https://github.com/Arihany/WinlatorWCPHub/releases/tag/FEXCore" },
+  ]
+};
+
+function renderBadges(badges) {
+  if (!badges || badges.length === 0) return '';
+  return `<div class="card-badges">${badges.map(b => `<span class="badge ${b.class}">${b.text}</span>`).join('')}</div>`;
+}
+
+function renderCard(item, isFeatured = false) {
+  if (isFeatured) {
+    return `
+      <div class="card card-featured" id="featured-driver-card">
+        <div class="card-icon" style="background:linear-gradient(135deg,rgba(79,142,247,0.2),rgba(124,90,247,0.2));font-size:30px;">${item.icon}</div>
+        <div class="card-featured-body">
+          ${renderBadges(item.badges)}
+          <div class="card-name">${item.name}</div>
+          <div class="card-desc">${item.description}</div>
+          <div class="card-footer" id="featured-footer">
+            <a href="${item.downloadUrl}" id="featured-dl-btn" target="_blank" rel="noopener" class="dl-btn dl-btn-primary">⬇ Fetching latest Gen8 ZIP...</a>
+            <a href="${item.githubUrl}" target="_blank" rel="noopener" class="dl-btn dl-btn-ghost">GitHub Repo</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  return `
+    <div class="card">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(79,142,247,0.1);">${item.icon}</div>
+        ${renderBadges(item.badges)}
+      </div>
+      <div class="card-name">${item.name}</div>
+      <div class="card-desc">${item.description}</div>
+      <div class="card-footer">
+        <a href="${item.downloadUrl}" target="_blank" rel="noopener" class="dl-btn dl-btn-primary">⬇ Download</a>
+        ${item.githubUrl ? `<a href="${item.githubUrl}" target="_blank" rel="noopener" class="dl-btn dl-btn-ghost">GH</a>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderGrid(containerId, items, featuredFirst = false) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  let html = '';
+  if (featuredFirst) {
+    const featuredItem = items.find(i => i.featured);
+    if (featuredItem) {
+      html += renderCard(featuredItem, true);
+      const rest = items.filter(i => !i.featured);
+      rest.forEach(item => { html += renderCard(item, false); });
+    } else {
+      items.forEach(item => { html += renderCard(item, false); });
+    }
+  } else {
+    items.forEach(item => { html += renderCard(item, false); });
+  }
+  container.innerHTML = html;
+}
+
+async function updateFeaturedDriverWithLatestGen8Zip() {
+  const dlBtn = document.getElementById('featured-dl-btn');
+  if (!dlBtn) return;
+  
+  const repo = "StevenMXZ/Adreno-Tools-Drivers";
+  const apiUrl = `https://api.github.com/repos/${repo}/releases/latest`;
+  
+  try {
+    dlBtn.textContent = "⬇ Checking for latest Gen8 release...";
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+    const latestRelease = await response.json();
+    
+    function findGen8Asset(release) {
+      if (!release.assets) return null;
+      return release.assets.find(asset => 
+        asset.name && /Gen8/i.test(asset.name) && asset.name.toLowerCase().endsWith('.zip')
+      );
+    }
+    
+    let targetRelease = latestRelease;
+    let gen8Asset = findGen8Asset(latestRelease);
+    
+    if (!gen8Asset) {
+      console.warn("Gen8 asset not found in latest release, searching recent releases...");
+      const releasesUrl = `https://api.github.com/repos/${repo}/releases?per_page=5`;
+      const releasesResp = await fetch(releasesUrl);
+      if (releasesResp.ok) {
+        const releases = await releasesResp.json();
+        for (const release of releases) {
+          const asset = findGen8Asset(release);
+          if (asset) {
+            targetRelease = release;
+            gen8Asset = asset;
+            break;
+          }
+        }
+      }
+    }
+    
+    if (!gen8Asset) throw new Error("No Gen8 zip asset found in any recent release");
+    
+    const zipUrl = gen8Asset.browser_download_url;
+    const version = targetRelease.tag_name;
+    
+    dlBtn.href = zipUrl;
+    dlBtn.textContent = `⬇ Download ${version} (Gen8 .zip)`;
+    dlBtn.classList.add('dl-btn-primary');
+    
+    const footerDiv = document.getElementById('featured-footer');
+    if (footerDiv && !footerDiv.querySelector('.version-tag')) {
+      const versionSpan = document.createElement('span');
+      versionSpan.className = 'version-tag';
+      versionSpan.textContent = `v${version} | A8xx driver`;
+      footerDiv.appendChild(versionSpan);
+    }
+  } catch (error) {
+    console.error("Failed to fetch Gen8 driver zip:", error);
+    dlBtn.textContent = "⬇ Download Gen8 (latest)";
+    dlBtn.href = "https://github.com/StevenMXZ/Adreno-Tools-Drivers/releases/latest";
+    if (document.getElementById('featured-footer') && !document.querySelector('.fallback-note')) {
+      const note = document.createElement('div');
+      note.className = 'version-tag';
+      note.style.width = '100%';
+      note.style.marginTop = '8px';
+      note.style.textAlign = 'center';
+      note.textContent = '⚠️ Auto-fetch failed — click to go to releases page and find the Gen8 zip (e.g., Turnip_Gen8_V27.zip)';
+      document.getElementById('featured-footer').appendChild(note);
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderGrid('drivers-grid', EMU_CONFIG.drivers, true);
+  renderGrid('winlator-grid', EMU_CONFIG.winlator, false);
+  renderGrid('tools-grid', EMU_CONFIG.tools, false);
+  
+  updateFeaturedDriverWithLatestGen8Zip();
+  
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+});
+</script>
+</body>
+</html>
