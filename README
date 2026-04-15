@@ -1,64 +1,57 @@
 # 🎮 EmuHub – Android Emulation Central
 
-[![Website](https://img.shields.io/badge/🌐-Live_Demo-4f8ef7)](https://your-demo-link.com)  
+[![Website](https://img.shields.io/badge/🌐-Live_Demo-4f8ef7)](https://your-actual-demo-link.com)
 [![GitHub release](https://img.shields.io/github/v/release/YOUR_USERNAME/emuhub)](https://github.com/YOUR_USERNAME/emuhub/releases)
 
 **One place for GPU drivers, Winlator mods, game patches, and every tool you need to run PC games on Android.**
 
-EmuHub is a community‑friendly static web app that centralises the best resources for Android PC emulation. It automatically fetches the latest **Turnip Gen8 (A8xx) driver** from `StevenMXZ/Adreno-Tools-Drivers` and provides quick access to Winlator forks, GameHub, DXVK, VKD3D, Box64, and more.
-
-![Screenshot](https://via.placeholder.com/800x400?text=EmuHub+Screenshot)  
-*(Add a real screenshot of your live page)*
+EmuHub is a community-friendly static web app that centralises the best resources for Android PC emulation.
 
 ---
 
 ## ✨ Features
 
-- 🔥 **Auto‑updated A8xx driver** – always shows the newest `Turnip_Gen8_*.zip` for Snapdragon 8 Elite / 8s Elite.
-- 🎮 **Turnip GPU drivers** – links for Adreno 6xx, 7xx, and Mesa Zink.
-- 🪟 **Winlator builds** – Official, Cmod, Ludashi, and more.
-- 🛠 **GameHub & tools** – GameHub, GameNative, BannerHub, DXVK, VKD3D, Box64, FexCore.
-- 📱 **Fully responsive** – works on desktop, tablet, and mobile (buttons stack on small screens).
-- ⚡ **Quick‑start guide** – 5 steps to run Windows games on Android.
+* 🔥 Auto-updated A8xx driver (Turnip Gen8)
+* 🎮 Turnip GPU drivers (Adreno 6xx / 7xx / Zink)
+* 🪟 Winlator builds (Official, Cmod, Ludashi)
+* 🛠 Tools: GameHub, DXVK, VKD3D, Box64, FexCore
+* 📱 Fully responsive layout
+* ⚡ Quick-start guide
 
 ---
 
-## 🚀 How to use the live site
+## 🖼 Screenshot
 
-1. Open `index.html` in any modern browser.
-2. The featured card automatically fetches the latest A8xx driver ZIP.
-3. Click any **Download** button to go to the respective GitHub release.
-4. Follow the **Quick‑Start Guide** to set up Winlator and import the Turnip driver.
-
-> **Note:** The GitHub API is used to fetch the latest release. If you run the page locally, CORS may block the request – host it on GitHub Pages or a local server for full functionality.
+![EmuHub Screenshot](https://via.placeholder.com/800x400)
 
 ---
 
-## 🧩 Data sources & credits
+## 🚀 How to use
 
-All drivers, tools, and mods are maintained by their original authors. EmuHub simply indexes them.
-
-| Category | Source | Author / Maintainer |
-|----------|--------|----------------------|
-| **A8xx Turnip driver** | [Adreno-Tools-Drivers](https://github.com/StevenMXZ/Adreno-Tools-Drivers) | [StevenMXZ](https://github.com/StevenMXZ) |
-| **Winlator Official** | [brunodev85/winlator](https://github.com/brunodev85/winlator) | [brunodev85](https://github.com/brunodev85) |
-| **Winlator Cmod** | [Stredohori/Winlator-CMOD](https://github.com/Stredohori/Winlator-CMOD) | [Stredohori](https://github.com/Stredohori) |
-| **Winlator Ludashi** | [StevenMXZ/Winlator-Ludashi](https://github.com/StevenMXZ/Winlator-Ludashi) | [StevenMXZ](https://github.com/StevenMXZ) |
-| **GameHub** | [mesatools/gamehub](https://github.com/mesatools/gamehub) | [mesatools](https://github.com/mesatools) |
-| **GameNative** | [utkarshdalal/GameNative](https://github.com/utkarshdalal/GameNative) | [utkarshdalal](https://github.com/utkarshdalal) |
-| **BannerHub (Revanced)** | [The412Banner/bannerhub](https://github.com/The412Banner/bannerhub) | [The412Banner](https://github.com/The412Banner) |
-| **VKD3D-Proton** | [HansKristian-Work/vkd3d-proton](https://github.com/HansKristian-Work/vkd3d-proton) | [HansKristian-Work](https://github.com/HansKristian-Work) |
-| **DXVK** | [doitsujin/dxvk](https://github.com/doitsujin/dxvk) | [doitsujin](https://github.com/doitsujin) |
-| **Box64** | [ptitSeb/box64](https://github.com/ptitSeb/box64) | [ptitSeb](https://github.com/ptitSeb) |
-| **FexCore / WinlatorWCPHub** | [Arihany/WinlatorWCPHub](https://github.com/Arihany/WinlatorWCPHub) | [Arihany](https://github.com/Arihany) |
-
-Special thanks to the entire **Winlator**, **Mesa Turnip**, and **Box64/Box86** communities.
+1. Open `index.html` in your browser
+2. Latest driver loads automatically
+3. Click **Download** buttons
+4. Follow setup guide
 
 ---
 
-## 🛠 Running locally
+## 🧩 Credits
 
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/emuhub.git
-   cd emuhub
+All tools belong to their original developers.
+
+| Tool           | Repo                                              |
+| -------------- | ------------------------------------------------- |
+| Turnip Drivers | https://github.com/StevenMXZ/Adreno-Tools-Drivers |
+| Winlator       | https://github.com/brunodev85/winlator            |
+| DXVK           | https://github.com/doitsujin/dxvk                 |
+| VKD3D          | https://github.com/HansKristian-Work/vkd3d-proton |
+| Box64          | https://github.com/ptitSeb/box64                  |
+
+---
+
+## 🛠 Run locally
+
+```bash
+git clone https://github.com/YOUR_USERNAME/emuhub.git
+cd emuhub
+```
